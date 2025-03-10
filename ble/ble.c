@@ -506,6 +506,33 @@ void ble_set_state_callback(connect_logic_state_callback_t cb) {
  *   GAP & GATTC 回调函数实现（精简版）
  * ---------------------------------------------------------------- */
 
+/* 判断是否为 DJI 相机的广播 */
+/* Determine whether it is a DJI camera advertisement */
+static uint8_t bsp_link_is_dji_camera_adv(esp_ble_gap_cb_param_t *scan_result) {
+    const uint8_t *ble_adv = scan_result->scan_rst.ble_adv;
+    const uint8_t adv_len = scan_result->scan_rst.adv_data_len + scan_result->scan_rst.scan_rsp_len;
+
+    for (int i = 0; i < adv_len; ) {
+        const uint8_t len = ble_adv[i];
+        
+        if (len == 0 || (i + len + 1) > adv_len) break;
+
+        const uint8_t type = ble_adv[i+1];
+        const uint8_t *data = &ble_adv[i+2];
+        const uint8_t data_len = len - 1;
+
+        if (type == ESP_BLE_AD_MANUFACTURER_SPECIFIC_TYPE) {
+            if (data_len >= 5) {
+                if (data[0] == 0xAA && data[1] == 0x08 && data[4] == 0xFA) {
+                    return 1;
+                }
+            }
+        }
+        i += (len + 1);
+    }
+    return 0;
+}
+
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param) {
     switch (event) {
     case ESP_GAP_BLE_SCAN_PARAM_SET_COMPLETE_EVT:
@@ -533,6 +560,15 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     case ESP_GAP_BLE_SCAN_RESULT_EVT: {
         esp_ble_gap_cb_param_t *r = param;
         if (r->scan_rst.search_evt == ESP_GAP_SEARCH_INQ_RES_EVT) {
+            // Print the name and signal strength of the found device
+            // 打印搜索到的设备名称和信号强度
+            // ESP_LOGI(TAG, "Found device: %s with RSSI: %d", adv_name, r->scan_rst.rssi);
+
+            /* Check if it is a DJI camera advertisement */
+            /* 检查是否为 DJI 相机广播 */
+            if (!bsp_link_is_dji_camera_adv(r)) {
+                break;
+            }
             /* Get the complete name from the advertisement/response data */
             /* 获取广播/响应数据里的完整名称 */
             uint8_t *adv_name = NULL;
@@ -545,29 +581,21 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
             /* Compare names and record signal strength */
             /* 对比名称并记录信号强度 */
             if (adv_name && adv_name_len > 0) {
-                // Print the name and signal strength of the found device
-                // 打印搜索到的设备名称和信号强度
-                // ESP_LOGI(TAG, "Found device: %s with RSSI: %d", adv_name, r->scan_rst.rssi);
-
-                // If the device name starts with "Osmo"
-                // 如果设备名以"Osmo"开头
-                if (strncmp((char *)adv_name, "Osmo", 4) == 0) {
-                    if (s_is_reconnecting) {
-                        // In reconnection mode, compare device addresses
-                        // 在重连模式下，比对设备地址
-                        if (memcmp(best_addr, r->scan_rst.bda, sizeof(esp_bd_addr_t)) == 0) {
-                            s_found_previous_device = true;
-                            ESP_LOGI(TAG, "Found previous device: %s, RSSI: %d", adv_name, r->scan_rst.rssi);
-                        }
-                    } else {
-                        // In normal scan mode, record the device with the strongest signal
-                        // 正常扫描模式，记录信号最强的设备
-                        if (r->scan_rst.rssi > best_rssi && r->scan_rst.rssi >= MIN_RSSI_THRESHOLD) {
-                            best_rssi = r->scan_rst.rssi;
-                            memcpy(best_addr, r->scan_rst.bda, sizeof(esp_bd_addr_t));
-                            strncpy(s_remote_device_name, (char *)adv_name, sizeof(s_remote_device_name) - 1);
-                            s_remote_device_name[sizeof(s_remote_device_name) - 1] = '\0';
-                        }
+                if (s_is_reconnecting) {
+                    // In reconnection mode, compare device addresses
+                    // 在重连模式下，比对设备地址
+                    if (memcmp(best_addr, r->scan_rst.bda, sizeof(esp_bd_addr_t)) == 0) {
+                        s_found_previous_device = true;
+                        ESP_LOGI(TAG, "Found previous device: %s, RSSI: %d", adv_name, r->scan_rst.rssi);
+                    }
+                } else {
+                    // In normal scan mode, record the device with the strongest signal
+                    // 正常扫描模式，记录信号最强的设备
+                    if (r->scan_rst.rssi > best_rssi && r->scan_rst.rssi >= MIN_RSSI_THRESHOLD) {
+                        best_rssi = r->scan_rst.rssi;
+                        memcpy(best_addr, r->scan_rst.bda, sizeof(esp_bd_addr_t));
+                        strncpy(s_remote_device_name, (char *)adv_name, sizeof(s_remote_device_name) - 1);
+                        s_remote_device_name[sizeof(s_remote_device_name) - 1] = '\0';
                     }
                 }
             }
