@@ -26,10 +26,10 @@ CmdSet = 0x00, CmdID = 0x19
 | ------------- | ------ | ---- | ------------ | ---------- | ------------------------------------------------------------ |
 | Command Frame | 0      | 4    | device_id    | uint32_t   | Sender's device ID                                           |
 |               | 4      | 1    | mac_addr_len | uint8_t    | MAC address length                                           |
-|               | 5      | 16   | mac_addr     | int8_t[16] | Sender's MAC address   Example: 12:33:44:55:66   mac_addr_len = 6   mac_addr[0] = 12   mac_addr[1] = 33   ...   mac_addr[5] = 66 |
+|               | 5      | 16   | mac_addr     | int8_t[16] | Sender's MAC address<br>Example: 12:33:44:55:66<br>mac_addr_len = 6<br>mac_addr[0] = 12<br>mac_addr[1] = 33<br>...<br>mac_addr[5] = 66 |
 |               | 21     | 4    | fw_version   | uint32_t   | Firmware version number of the requesting device, fill in 0  |
 |               | 25     | 1    | conidx       | uint8_t    | Reserved                                                     |
-|               | 26     | 1    | verify_mode  | uint8_t    | 0: No verification, the camera decides based on saved history whether verification is needed, verification code carried in verify_data<br/>1: Verification needed, the camera shows a verification code pop-up<br/>2: Verification result, 0 allows connection, 1 rejects connection |
+|               | 26     | 1    | verify_mode  | uint8_t    | 0: No verification, the camera decides based on saved history whether verification is needed, verification code carried in verify_data<br>1: Verification needed, the camera shows a verification code pop-up<br>2: Verification result, 0 allows connection, 1 rejects connection |
 |               | 27     | 2    | verify_data  | uint16_t   | Verification data or code                                    |
 |               | 29     | 4    | reserved     | uint8_t[4] | Reserved                                                     |
 
@@ -83,11 +83,11 @@ CmdSet = 0x00, CmdID = 0x00
 
 CmdSet = 0x00, CmdID = 0x11
 
-| Frame Type    | Offset | Size | Name      | Type     | Description                                                  |      |
-| ------------- | ------ | ---- | --------- | -------- | ------------------------------------------------------------ | ---- |
-| Command Frame | 0      | 1    | key_code  | uint8_t  |                                                              |      |
-|               | 1      | 1    | mode      | uint8_t  | Key report mode selection<br/>0x00: Report key press / release state<br/>0x01: Report key event |      |
-|               | 2      | 2    | key_value | uint16_t | `mode` is 0:<br/>0x00: Key press<br/>0x01: Key release<br/>`mode` is 1:<br/>0x00: Short press event<br/>0x01: Long press event<br/>0x02: Double click event<br/>0x03: Triple click event<br/>0x04: Quadruple click event |      |
+| Frame Type    | Offset | Size | Name      | Type     | Description                                                  |
+| ------------- | ------ | ---- | --------- | -------- | ------------------------------------------------------------ |
+| Command Frame | 0      | 1    | key_code  | uint8_t  |                                                              |
+|               | 1      | 1    | mode      | uint8_t  | Key report mode selection<br/>0x00: Report key press / release state<br/>0x01: Report key event |
+|               | 2      | 2    | key_value | uint16_t | `mode` is 0:<br/>0x00: Key press<br/>0x01: Key release<br/>`mode` is 1:<br/>0x00: Short press event<br/>0x01: Long press event<br/>0x02: Double click event<br/>0x03: Triple click event<br/>0x04: Quadruple click event |
 
 | Frame Type     | Offset | Size | Name        | Type    | Description                  |
 | -------------- | ------ | ---- | ----------- | ------- | ---------------------------- |
@@ -120,20 +120,20 @@ CmdSet = 0x00, CmdID = 0x16
 
 CmdSet = 0x00, CmdID = 0x17
 
-| Frame Type    | Offset | Size | Name                         | Type     | Description                              |
-| ------------- | ------ | ---- | ---------------------------- | -------- | ---------------------------------------- |
-| Command Frame | 0      | 4    | year_month_day               | int32_t  | Date: year\*10000+month\*100+day         |
-|               | 4      | 4    | hour_minute_second           | int32_t  | Time: (hour+8)\*10000+minute\*100+second |
-|               | 8      | 4    | gps_longitude                | int32_t  | Longitude value = actual value * 10^7    |
-|               | 12     | 4    | gps_latitude                 | int32_t  | Latitude value = actual value * 10^7     |
-|               | 16     | 4    | height                       | int32_t  | Height in mm                             |
-|               | 20     | 4    | speed_to_north               | float    | Speed to the north in cm/s               |
-|               | 24     | 4    | speed_to_east                | float    | Speed to the east in cm/s                |
-|               | 28     | 4    | speed_to_wnward              | float    | Descending speed in cm/s                 |
-|               | 32     | 4    | vertical_accuracy_estimate   | uint32_t | Vertical accuracy estimate in mm         |
-|               | 36     | 4    | horizontal_accuracy_estimate | uint32_t | Horizontal accuracy estimate in mm       |
-|               | 40     | 4    | speed_accuracy_estimate      | uint32_t | Speed accuracy estimate in cm/s          |
-|               | 44     | 4    | satellite_number             | uint32_t | Number of satellites                     |
+| Frame Type    | Offset | Size | Name                         | Type     | Description                               |
+| ------------- | ------ | ---- | ---------------------------- | -------- | ----------------------------------------- |
+| Command Frame | 0      | 4    | year_month_day               | int32_t  | Date: year\*10000+month\*100+day          |
+|               | 4      | 4    | hour_minute_second           | int32_t  | Time: (hour+8)\*10000+minute\*100+second  |
+|               | 8      | 4    | gps_longitude                | int32_t  | Longitude value = \<actual value\> * 10^7 |
+|               | 12     | 4    | gps_latitude                 | int32_t  | Latitude value = \<actual value\> * 10^7  |
+|               | 16     | 4    | height                       | int32_t  | Height in mm                              |
+|               | 20     | 4    | speed_to_north               | float    | Speed to the north in cm/s                |
+|               | 24     | 4    | speed_to_east                | float    | Speed to the east in cm/s                 |
+|               | 28     | 4    | speed_to_wnward              | float    | Descending speed in cm/s                  |
+|               | 32     | 4    | vertical_accuracy_estimate   | uint32_t | Vertical accuracy estimate in mm          |
+|               | 36     | 4    | horizontal_accuracy_estimate | uint32_t | Horizontal accuracy estimate in mm        |
+|               | 40     | 4    | speed_accuracy_estimate      | uint32_t | Speed accuracy estimate in cm/s           |
+|               | 44     | 4    | satellite_number             | uint32_t | Number of satellites                      |
 
 | Frame Type     | Offset | Size | Name     | Type    | Description                  |
 | -------------- | ------ | ---- | -------- | ------- | ---------------------------- |
