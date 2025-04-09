@@ -24,7 +24,7 @@ Here, the CRC-16 value is the result of performing CRC16 checksum on the segment
 
 ## DATA Segment
 
-The core of this program lies in encapsulating and parsing the DATA segment. Although the length of the DATA segment is variable, the first two bytes are always CmdSet and CmdID. Each (CmdSet, CmdID) pair determines a specific function. The structure of the DATA segment (offset 12) is as follows:
+The core of this program lies in encapsulating and parsing the DATA segment. Although the length of the DATA segment is variable, the first two bytes are always CmdSet and CmdID. Each (CmdSet, CmdID) pair determines a specific function. The structure of the DATA segment (offset 12, size n) is as follows:
 
 ```
 |  CmdSet  |  CmdID   |     Data Payload   |

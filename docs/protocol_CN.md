@@ -24,7 +24,7 @@ DJI R SDK 帧结构如下所示：
 
 ## DATA 数据段
 
-本程序的核心在于封装和解析 DATA 数据段。虽然 DATA 数据段的长度不固定，但开头的两个字节始终为 CmdSet 和 CmdID，每组 (CmdSet, CmdID) 可以确定一种功能。DATA 数据段（偏移 12）结构如下所示：
+本程序的核心在于封装和解析 DATA 数据段。虽然 DATA 数据段的长度不固定，但开头的两个字节始终为 CmdSet 和 CmdID，每组 (CmdSet, CmdID) 可以确定一种功能。DATA 数据段（偏移 12，大小为 n）结构如下所示：
 
 ```
 |  CmdSet  |  CmdID   |     Data Payload   |
